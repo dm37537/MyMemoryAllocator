@@ -12,10 +12,8 @@ struct Block
    struct Block *next;
 };
 
-char memory[200000];
-
 static void *mem;
-static struct Block *block;
+struct Block *block;
 
 void my_malloc_init(size_t size)
 {
@@ -118,7 +116,7 @@ void my_dump_mem(FILE *stream)
    cur = block;
    while(cur->next != NULL) {
       printf("Address is %" PRIu64 "\n", my_address(cur));
-      draw_box(stream, cur->size / MiB, cur->is_free, 0);
+      draw_box(stream, (int)(cur->size/MiB), cur->is_free, 0);
       cur = cur->next;      
    }
    draw_box(stream, cur->size / MiB + 1, cur->is_free, 1);
