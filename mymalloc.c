@@ -26,8 +26,9 @@ void my_malloc_init(size_t size)
 
 
 void slice(struct Block *cur, size_t size) {
-   struct Block *free_b = (struct Block*)((char*)cur + size + sizeof(struct Block));
-   free_b->size = (cur->size) - size - sizeof(struct Block);
+   printf("%s\n", "slice");
+   struct Block *free_b = (struct Block*)((char*)cur + size);
+   free_b->size = (cur->size) - size;
    free_b->is_free = 1;  
    free_b->next = cur->next;
    cur->size = size;
@@ -49,12 +50,10 @@ void *my_malloc(size_t size)
    if (cur->size == size) {
       cur->is_free = 0;
       result = (void*) (++cur);
-      printf("%s\n", "fit space");
       return result;
-   } else if (cur->size > (size + sizeof(struct Block))) {
+   } else if (cur->size > (size)) {
       slice(cur, size);
       result = (void*)(++cur);
-      printf("%s\n", "sliced");
       return result;
    } else {
       printf("%s\n", "no memory");
@@ -64,12 +63,13 @@ void *my_malloc(size_t size)
 
 
 void join() {
+   printf("%s\n", "join");
    struct Block *cur;
    cur = block;
    while(cur->next != NULL) {
       if (cur->is_free && cur->next->is_free) {
-         printf("Address of cur is %" PRIu64 "\n",my_address(cur));
-         cur->size += (cur->next->size) + sizeof(struct Block);
+         printf("Address of cur is %" PRIu64 ", size is %i\n",my_address(cur), cur->size);
+         cur->size += (cur->next->size);
          cur->next = cur->next->next;
       }
       cur = cur->next;
@@ -120,7 +120,7 @@ void my_dump_mem(FILE *stream)
       draw_box(stream, (int)(cur->size/MiB), cur->is_free, 0);
       cur = cur->next;      
    }
-   draw_box(stream, cur->size / MiB + 1, cur->is_free, 1);
+   draw_box(stream, cur->size / MiB, cur->is_free, 1);
 
    /* the following is an example */
    /* of a heap with four */
